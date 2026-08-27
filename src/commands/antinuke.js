@@ -1,7 +1,3 @@
-// commands/antinuke.js
-// Comando /antinuke: configura el sistema anti-nuke en el servidor
-// donde se ejecute. Cada servidor tiene su propia configuración.
-
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, EmbedBuilder } from 'discord.js';
 import { getConfig, setConfig, addToWhitelist, removeFromWhitelist } from '../utils/antiNukeStore.js';
 
