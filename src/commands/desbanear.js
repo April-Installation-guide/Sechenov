@@ -1,8 +1,3 @@
-// commands/desbanear.js
-// Comando /desbanear: desbanea a un usuario (por ID) en TODOS los
-// servidores donde el bot esté presente y tenga permiso.
-// Restringido a ACD y a usuarios con permiso de "Banear miembros" ahí.
-
 import {
     SlashCommandBuilder,
     PermissionFlagsBits,
@@ -59,7 +54,6 @@ export async function execute(interaction, client) {
         return;
     }
 
-    // --- Confirmación explícita con botones ---
     const confirmRow = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('desbanear_confirm').setLabel('Confirmar desbaneo masivo').setStyle(ButtonStyle.Success),
         new ButtonBuilder().setCustomId('desbanear_cancel').setLabel('Cancelar').setStyle(ButtonStyle.Secondary)
@@ -102,7 +96,6 @@ export async function execute(interaction, client) {
 
     await buttonInteraction.update({ content: '⏳ Ejecutando desbaneo en todos los servidores...', embeds: [], components: [] });
 
-    // --- Ejecutar el desbaneo en cada servidor ---
     const results = [];
 
     for (const guild of client.guilds.cache.values()) {
@@ -130,11 +123,8 @@ export async function execute(interaction, client) {
     const successCount = results.filter((r) => r.ok).length;
     const failCount = results.length - successCount;
 
-    // Resetea su estado de apelación: ya no está baneado, así que si vuelve
-    // a ser baneado en el futuro podrá apelar normalmente de nuevo.
+    // tung tung sahut
     setAppeal(targetUser.id, { status: 'none' });
-
-    // --- DM notificando el desbaneo (best-effort, no rompe el flujo si falla) ---
     let dmSent = false;
     try {
         const dmEmbed = new EmbedBuilder()
@@ -154,7 +144,6 @@ export async function execute(interaction, client) {
         content: `✅ Proceso terminado: **${successCount}** servidor(es) exitoso(s), **${failCount}** con error. Revisa el log para el detalle.`,
     });
 
-    // --- Log minimalista en el canal dedicado ---
     if (BANCOMER_LOG_CHANNEL_ID) {
         try {
             const logChannel = await client.channels.fetch(BANCOMER_LOG_CHANNEL_ID);
@@ -168,7 +157,7 @@ export async function execute(interaction, client) {
                 .join('\n') || 'Sin servidores.';
 
             const logEmbed = new EmbedBuilder()
-                .setTitle('🔓 /desbanear')
+                .setTitle('/desbanear')
                 .addFields(
                     { name: 'Ejecutado por', value: `${interaction.user.tag}`, inline: true },
                     { name: 'Usuario desbaneado', value: `${targetUser.tag}`, inline: true },
@@ -186,7 +175,6 @@ export async function execute(interaction, client) {
         }
     }
 
-    // --- Actualiza el mensaje fijo de #blacklist ---
     if (successCount > 0) {
         removeEntry(targetUser.id);
         await updateBlacklistMessage(client);
