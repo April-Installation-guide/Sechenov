@@ -1,8 +1,3 @@
-// utils/appealsStore.js
-// Almacenamiento simple en JSON para el estado de apelaciones de /bancomer.
-// Persiste entre reinicios del bot (no es una base de datos real, pero
-// es suficiente para este caso de uso).
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
