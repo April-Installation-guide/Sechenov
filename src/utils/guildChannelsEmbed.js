@@ -1,22 +1,7 @@
-// utils/guildChannelsEmbed.js
-// Utilidad compartida para construir embeds con la lista de canales
-// (nombre + ID) de un servidor. La usan tanto guildCreate.js (mirror
-// server automático) como el comando /showme (selector manual).
-
 import { EmbedBuilder } from 'discord.js';
 
-const FIELD_CHAR_LIMIT = 1000; // margen bajo el límite real de 1024 de Discord
-const MAX_FIELDS_PER_EMBED = 25; // límite real de Discord
-
-/**
- * Construye uno o más embeds con la lista de canales de texto de un
- * servidor, respetando los límites de Discord (25 campos por embed,
- * ~1024 caracteres por campo). Si el servidor tiene muchísimos
- * canales, devuelve varios embeds en orden.
- *
- * @param {import('discord.js').Guild} guild
- * @returns {import('discord.js').EmbedBuilder[]}
- */
+const FIELD_CHAR_LIMIT = 1000; 
+const MAX_FIELDS_PER_EMBED = 25; // límite
 export function buildChannelListEmbeds(guild) {
     const textChannels = guild.channels.cache
         .filter((ch) => ch.isTextBased() && !ch.isThread())
@@ -62,10 +47,6 @@ export function buildChannelListEmbeds(guild) {
     return embeds;
 }
 
-/**
- * Agrupa líneas de texto en bloques que no superen el límite de
- * caracteres por campo de embed.
- */
 function chunkLines(lines, charLimit) {
     const chunks = [];
     let current = '';
