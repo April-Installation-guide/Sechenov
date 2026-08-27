@@ -1,21 +1,3 @@
-/**
- * Comando: /enviar-denuncia
- * Requiere: discord.js v14+
- *
- * Flujo:
- * 1. El usuario ejecuta /enviar-denuncia con la persona reportada, una razón corta
- *    y hasta 3 archivos de evidencia (opcionales, directo en el comando).
- * 2. Se abre un Modal donde puede escribir el detalle completo de la denuncia (hasta 4000 caracteres).
- * 3. Al enviar el modal, se arma un embed con todo y se manda a un canal privado de moderación.
- * 4. Se confirma por DM al denunciante que su reporte fue recibido.
- *
- * IMPORTANTE (config obligatoria):
- * - REPORT_CHANNEL_ID ya está fijado al canal 1534021942724661278 (log de denuncias).
- * - Asegúrate de que el bot tenga permiso de ver/escribir/adjuntar archivos en ese canal.
- * - Cada denuncia nueva se manda como un mensaje independiente en ese mismo canal,
- *   funcionando como historial/log cronológico de todas las denuncias recibidas.
- */
-
 const {
   SlashCommandBuilder,
   ModalBuilder,
@@ -27,9 +9,6 @@ const {
 } = require('discord.js');
 
 const REPORT_CHANNEL_ID = '1534021942724661278';
-
-// Guardamos temporalmente los datos del comando mientras se completa el modal
-// (clave: ID de interacción del usuario, ya que un modal no puede llevar attachments)
 const pendingReports = new Map();
 
 module.exports = {
@@ -67,7 +46,6 @@ module.exports = {
       interaction.options.getAttachment('archivo3'),
     ].filter(Boolean);
 
-    // Guardamos temporalmente lo que no cabe en el modal (usuario, razón, archivos)
     pendingReports.set(interaction.user.id, {
       usuarioReportado,
       razon,
@@ -93,7 +71,6 @@ module.exports = {
     await interaction.showModal(modal);
   },
 
-  // Este handler va en tu listener global de interacciones (interactionCreate)
   async handleModalSubmit(interaction) {
     if (interaction.customId !== 'modal-denuncia') return;
 
@@ -119,7 +96,6 @@ module.exports = {
       )
       .setTimestamp();
 
-    // Si el detalle es muy largo para el embed, lo mandamos aparte como archivo .txt
     let extraFile = null;
     if (detalle.length > 1024) {
       extraFile = {
@@ -152,18 +128,3 @@ module.exports = {
     }
   },
 };
-
-/**
- * En tu archivo principal (index.js) necesitas conectar el handler del modal:
- *
- * client.on('interactionCreate', async (interaction) => {
- *   if (interaction.isChatInputCommand() && interaction.commandName === 'enviar-denuncia') {
- *     await denunciaCommand.execute(interaction);
- *   }
- *   if (interaction.isModalSubmit()) {
- *     await denunciaCommand.handleModalSubmit(interaction);
- *   }
- * });
- *
- * Y registrar el comando (deploy-commands.js) de forma normal, como cualquier slash command.
- */
