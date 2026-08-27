@@ -1,7 +1,3 @@
-// utils/staffChannelsStore.js
-// Guarda qué canal de staff corresponde a cada servidor, para que
-// /bancomer pueda notificar ahí las razones de cada baneo.
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,7 +36,6 @@ export function getStaffChannel(guildId) {
 }
 
 export function getAllStaffChannels() {
-    // Devuelve [{ guildId, channelId }, ...]
     const all = readAll();
     return Object.entries(all).map(([guildId, channelId]) => ({ guildId, channelId }));
 }
