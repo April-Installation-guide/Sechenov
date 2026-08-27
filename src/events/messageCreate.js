@@ -26,7 +26,6 @@ function dividirTexto(texto, limite = 1900) {
   return partes;
 }
 
-// Diferentes estilos de barra de progreso
 function crearBarraProgreso(actual, total, estilo = 'default') {
   const porcentaje = Math.round((actual / total) * 100);
   const tamaño = 20;
@@ -45,18 +44,15 @@ function crearBarraProgreso(actual, total, estilo = 'default') {
     return `⬜ ${porcentaje}%`;
   }
   
-  // Default: con números
   const emoji = actual === total ? '✅' : '⏳';
   return `${emoji} \`[${'█'.repeat(completado)}${'░'.repeat(vacio)}]\` ${actual}/${total} (${porcentaje}%)`;
 }
 
-// Spinners animados
 function obtenerSpinner(iteracion) {
   const spinners = ['⏳', '⌛', '⏳', '⌛'];
   return spinners[iteracion % spinners.length];
 }
 
-// Helper para convertir la imagen adjunta de Discord a Base64
 async function obtenerImagenData(attachment) {
   if (!attachment || !attachment.contentType?.startsWith('image/')) {
     return null;
@@ -86,19 +82,15 @@ export async function handleMessageCreate(message, client) {
         try {
             await message.channel.sendTyping();
             
-            // Mostrar mensaje de "pensando"
             const msgPensando = await message.reply('**Pensando...**');
             
-            // Extraer adjuntos si el usuario envió una imagen
             const attachment = message.attachments.first();
             const imageData = await obtenerImagenData(attachment);
 
-            // Limpiar la mención del bot en el texto enviado a la IA
             const promptTexto = message.content.replace(/<@!?\d+>/g, '').trim();
 
             const reply = await generateAIResponse(promptTexto, imageData);
             
-            // Actualizar que ya terminó de pensar
             await msgPensando.edit('**Procesando respuesta...**');
             
             const partes = dividirTexto(reply);
@@ -109,25 +101,20 @@ export async function handleMessageCreate(message, client) {
                 return;
             }
             
-            // Mostrar barra de progreso inicial
             const mensajeProgreso = await message.channel.send(
                 ` **Enviando respuesta en ${partes.length} partes**\n\n` +
                 `${crearBarraProgreso(0, partes.length)}\n\n` +
                 ` Preparando...`
             );
             
-            // Eliminar mensaje de "pensando"
             await msgPensando.delete();
             
-            // Enviar partes con barra de progreso
             let spinnerIteracion = 0;
             
             for (let i = 0; i < partes.length; i++) {
-                // Enviar la parte (CORREGIDO: ternario con : '')
                 const prefijo = i === 0 ? '**Comienza la respuesta:**\n\n' : '';
                 await message.channel.send(`${prefijo}${partes[i]}`);
                 
-                // Actualizar barra de progreso con spinner animado
                 spinnerIteracion++;
                 const spinner = obtenerSpinner(spinnerIteracion);
                 const progreso = crearBarraProgreso(i + 1, partes.length);
@@ -143,7 +130,6 @@ export async function handleMessageCreate(message, client) {
                 }
             }
             
-            // Mensaje final con check
             await mensajeProgreso.edit(
                 ` Respuesta Enviada \n\n` +
                 `${crearBarraProgreso(partes.length, partes.length)}\n\n` +
