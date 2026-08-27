@@ -1,7 +1,3 @@
-// utils/blacklistStore.js
-// Almacenamiento simple en JSON para la lista de baneados (#blacklist)
-// y el ID del mensaje que se edita cada vez que hay un cambio.
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -45,7 +41,6 @@ export function getEntries() {
     return readData().entries;
 }
 
-// Agrega un baneado. Si ya existía (re-baneado), actualiza su entrada.
 export function addEntry({ userId, tag, reason, date }) {
     const data = readData();
     const filtered = data.entries.filter((e) => e.userId !== userId);
@@ -54,7 +49,6 @@ export function addEntry({ userId, tag, reason, date }) {
     writeData(data);
 }
 
-// Quita a alguien de la lista (al desbanearlo).
 export function removeEntry(userId) {
     const data = readData();
     data.entries = data.entries.filter((e) => e.userId !== userId);
