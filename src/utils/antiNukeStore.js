@@ -1,7 +1,3 @@
-// utils/antiNukeStore.js
-// Configuración persistente del anti-nuke por servidor: si está activo,
-// canal de alertas, y lista blanca de IDs exentos de detección.
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
