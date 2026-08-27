@@ -1,12 +1,3 @@
-// deploy-commands.js
-// Registra los slash commands en Discord.
-// - Los comandos de moderación se registran SOLO en ACD (guild command,
-//   aparecen en segundos, restringidos a ese servidor).
-// - /enviar y /antinuke se registran de forma GLOBAL (tardan hasta ~1h
-//   la primera vez, pero funcionan en cualquier servidor donde esté el bot).
-//
-// Uso: node deploy-commands.js
-
 import { REST, Routes } from 'discord.js';
 import 'dotenv/config';
 import { guildCommandsData, globalCommandsData } from './src/events/interactionCreate.js';
