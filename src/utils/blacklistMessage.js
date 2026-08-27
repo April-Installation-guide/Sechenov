@@ -1,7 +1,3 @@
-// utils/blacklistMessage.js
-// Mantiene un único mensaje fijo en #blacklist, actualizándolo cada
-// vez que alguien es baneado o desbaneado vía /bancomer y /desbanear.
-
 import { EmbedBuilder } from 'discord.js';
 import { getEntries, getMessageId, setMessageId } from './blacklistStore.js';
 
@@ -43,7 +39,7 @@ export async function updateBlacklistMessage(client) {
                 await msg.edit({ embeds: [embed] });
                 return;
             } catch {
-                // El mensaje fue borrado o no se encontró — creamos uno nuevo.
+                // kjjjjjj
             }
         }
 
