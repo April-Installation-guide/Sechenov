@@ -13,10 +13,8 @@ class GeminiService {
                 config.systemInstruction = systemInstruction;
             }
 
-            // Preparamos el contenido
             const contents = [];
 
-            // Si se pasa una imagen ({ mimeType, data }), la agregamos
             if (imageData && imageData.mimeType && imageData.data) {
                 contents.push({
                     inlineData: {
