@@ -1,20 +1,14 @@
-// events/antiNuke.js
-// Sistema anti-nuke: detecta eliminación masiva de canales/roles,
-// baneos masivos y expulsiones masivas. Si detecta el patrón, pone
-// en cuarentena (timeout 2h) al responsable y alerta al staff.
-
 import { AuditLogEvent, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } from 'discord.js';
 import { getConfig } from '../utils/antiNukeStore.js';
 import { registerAction } from '../utils/antiNukeTracker.js';
 
-const QUARANTINE_MS = 2 * 60 * 60 * 1000; // 2 horas
+const QUARANTINE_MS = 2 * 60 * 60 * 1000; // 2 horas CSKJFKSJFKSJF
 
 async function findExecutor(guild, auditLogType, targetId) {
     try {
         const logs = await guild.fetchAuditLogs({ type: auditLogType, limit: 5 });
         const entry = logs.entries.find((e) => e.target?.id === targetId || !targetId);
         if (!entry) return null;
-        // Ignora entradas de más de 5 segundos de antigüedad (evita falsos positivos con logs viejos).
         if (Date.now() - entry.createdTimestamp > 5000) return null;
         return entry.executor;
     } catch {
@@ -33,14 +27,12 @@ async function handleSuspiciousActivity(guild, client, executor, actionLabel) {
     const member = await guild.members.fetch(executor.id).catch(() => null);
     if (!member) return;
 
-    // Cuarentena: timeout de 2 horas.
     try {
         await member.timeout(QUARANTINE_MS, `Anti-nuke: actividad sospechosa (${actionLabel})`);
     } catch (err) {
         console.error('Anti-nuke: no se pudo aplicar timeout:', err);
     }
 
-    // Alerta al staff con botones de decisión.
     const logChannelId = cfg.logChannelId;
     if (!logChannelId) return;
 
@@ -96,8 +88,6 @@ export function registerAntiNukeListeners(client) {
     });
 
     client.on('guildMemberRemove', async (member) => {
-        // guildMemberRemove dispara tanto en salidas voluntarias como en
-        // kicks — solo nos interesa si el audit log confirma un kick.
         const executor = await findExecutor(member.guild, AuditLogEvent.MemberKick, member.id);
         if (!executor) return;
         if (registerAction(member.guild.id, executor.id, 'kick')) {
