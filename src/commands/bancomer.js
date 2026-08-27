@@ -1,8 +1,3 @@
-// commands/bancomer.js
-// Comando /bancomer: banea a un usuario (por ID) en TODOS los servidores
-// donde el bot esté presente y tenga permiso.
-// Restringido a ACD y a usuarios con permiso de "Banear miembros" ahí.
-
 import {
     SlashCommandBuilder,
     PermissionFlagsBits,
@@ -119,9 +114,6 @@ export async function execute(interaction, client) {
 
     await buttonInteraction.update({ content: '⏳ Ejecutando baneo en todos los servidores...', embeds: [], components: [] });
 
-    // --- DM al usuario ANTES de banearlo ---
-    // Se manda primero porque, una vez baneado de todos los servidores
-    // que comparte con el bot, es probable que el DM ya no se pueda enviar.
     let dmSent = false;
     try {
         const dmEmbed = new EmbedBuilder()
@@ -141,7 +133,6 @@ export async function execute(interaction, client) {
         await targetUser.send({ embeds: [dmEmbed], components: [dmRow] });
         dmSent = true;
 
-        // Guarda contexto para cuando el usuario apele (puede ser mucho después).
         setAppeal(targetUser.id, {
             status: 'none',
             banReason: reason,
@@ -151,7 +142,6 @@ export async function execute(interaction, client) {
         dmSent = false;
     }
 
-    // --- Ejecutar el baneo en cada servidor ---
     const results = [];
 
     for (const guild of client.guilds.cache.values()) {
@@ -186,7 +176,6 @@ export async function execute(interaction, client) {
             (dmSent ? '' : '\n⚠️ No se pudo enviar el DM al usuario (tiene los DMs cerrados o no comparte servidor con el bot).'),
     });
 
-    // --- Log minimalista en el canal dedicado ---
     if (BANCOMER_LOG_CHANNEL_ID) {
         try {
             const logChannel = await client.channels.fetch(BANCOMER_LOG_CHANNEL_ID);
@@ -232,7 +221,6 @@ export async function execute(interaction, client) {
         await updateBlacklistMessage(client);
     }
 
-    // --- Notifica a los canales de staff de cada servidor ---
     const staffChannels = getAllStaffChannels();
     if (staffChannels.length > 0) {
         const staffEmbed = new EmbedBuilder()
