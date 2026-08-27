@@ -1,22 +1,7 @@
-// events/guildCreate.js
-// Cuando el bot entra a un nuevo servidor, publica un embed en el canal
-// "mirror server" con la lista de canales de ese servidor y sus IDs,
-// para poder configurarlos rápido en GUILDS_CONFIG (logger.js).
-
 import { EmbedBuilder } from 'discord.js';
-
 const MIRROR_CHANNEL_ID = '1533316504295051366';
-
-// Límite seguro de caracteres por campo de embed (Discord permite 1024,
-// dejamos margen) y de campos por embed (Discord permite 25).
 const FIELD_CHAR_LIMIT = 1000;
 const MAX_FIELDS_PER_EMBED = 25;
-
-/**
- * Handler del evento guildCreate.
- * @param {import('discord.js').Guild} guild
- * @param {import('discord.js').Client} client
- */
 export async function handleGuildCreate(guild, client) {
     try {
         const mirrorChannel = await client.channels.fetch(MIRROR_CHANNEL_ID);
@@ -50,10 +35,6 @@ export async function handleGuildCreate(guild, client) {
     }
 }
 
-/**
- * Divide la lista de canales en uno o más embeds respetando los
- * límites de Discord (25 campos por embed, ~1024 caracteres por campo).
- */
 function buildChannelListEmbeds(guild, lines) {
     const chunks = chunkLines(lines, FIELD_CHAR_LIMIT);
 
@@ -80,10 +61,6 @@ function buildChannelListEmbeds(guild, lines) {
     return embeds;
 }
 
-/**
- * Agrupa líneas en bloques de texto que no superen el límite de
- * caracteres por campo de embed.
- */
 function chunkLines(lines, charLimit) {
     const chunks = [];
     let current = '';
