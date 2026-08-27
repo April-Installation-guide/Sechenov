@@ -1,8 +1,3 @@
-// events/interactionCreate.js
-// Enruta las interacciones de Discord: slash commands, el selector de
-// /showme, el flujo de apelaciones de /bancomer, y el sistema de
-// denuncias de /enviar denuncia (botones + modales).
-
 import * as showmeCommand from '../commands/showme.js';
 import * as bancomerCommand from '../commands/bancomer.js';
 import * as desbanearCommand from '../commands/desbanear.js';
@@ -25,8 +20,6 @@ import {
 
 const APPEALS_CHANNEL_ID = '1533598900823392376';
 const DENUNCIAS_CHANNEL_ID = '1534021942724661278';
-
-// Comandos registrados como guild commands (solo ACD, rápidos, restringidos).
 const guildCommands = new Map([
     [showmeCommand.data.name, showmeCommand],
     [bancomerCommand.data.name, bancomerCommand],
@@ -34,7 +27,6 @@ const guildCommands = new Map([
     [setCommand.data.name, setCommand],
 ]);
 
-// Comando(s) registrados de forma global (cualquier servidor, sin restricción).
 const globalCommands = new Map([
     [enviarCommand.data.name, enviarCommand],
 ]);
@@ -44,7 +36,6 @@ const commands = new Map([...guildCommands, ...globalCommands]);
 export const guildCommandsData = [...guildCommands.values()].map((c) => c.data);
 export const globalCommandsData = [...globalCommands.values()].map((c) => c.data);
 
-// Solo quienes tengan permiso de banear en ACD pueden moderar denuncias/apelaciones.
 function canModerate(interaction) {
     return interaction.guildId === HOME_GUILD_ID && interaction.memberPermissions?.has(PermissionFlagsBits.BanMembers);
 }
@@ -76,11 +67,9 @@ export async function handleInteractionCreate(interaction, client) {
             return;
         }
 
-        // --- Botones ---
         if (interaction.isButton()) {
             const [action, ...rest] = interaction.customId.split(':');
 
-            // -- Flujo de apelaciones de /bancomer --
             if (action === 'bancomer_apelar') {
                 const targetUserId = rest[0];
                 if (isBlocked(targetUserId)) {
@@ -150,7 +139,6 @@ export async function handleInteractionCreate(interaction, client) {
                 return;
             }
 
-            // -- Flujo de denuncias --
             if (action === 'denuncia_revisado') {
                 if (!canModerate(interaction)) {
                     await interaction.reply({ content: '⛔ No tienes permiso para usar este botón.', ephemeral: true });
@@ -202,7 +190,6 @@ export async function handleInteractionCreate(interaction, client) {
             return;
         }
 
-        // --- Modales ---
         if (interaction.isModalSubmit()) {
             const [action, ...rest] = interaction.customId.split(':');
 
